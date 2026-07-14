@@ -34,36 +34,60 @@ else:
 data = response.json()
 
 
+rows = []
+for team in data["teams"]:
+    row = {
+    
+        "acronymName": team["acronymName"],
+        # "shortName": team["shortName"],
+    }
+    for stat in team["stats"]:
+        row[stat["statsId"]] = stat["statsValue"]
+    rows.append(row)
 
-teams_data = pd.DataFrame(data)  # Select only numeric columns
+teams_data = pd.DataFrame(rows)
+
+print(teams_data)
 
 
 
 #make a df with the average of each team stat coumn
+print("______________________________________________LEAGUE STAT AVERAGES____________________________________________________________")
 average_df =  teams_data.mean(numeric_only=True, axis=0)
+print(average_df)
+
+
 #make a df with the stddev of each team stat column
+print("______________________________________________LEAGUE STAT STANDARD DEVIATIONS____________________________________________________________")
 stddev_df =  teams_data.std(numeric_only=True, axis=0)
+print(stddev_df)
+
+
 #use the average and stddev df to calculate the zscore for each team stat column
 #we do this so that we can easily compare the importance of each stat to total points, regardless of how a stat is represented
+print("______________________________________________LEAGUE STAT Z-SCORES FOR EACH TEAM____________________________________________________________")
 zscore_df = (teams_data - average_df) / stddev_df
-
-
-#using the .corr library funciotn we can obtain the correlation of each stat to total points, thus giving a bit of a guide as to how 
-# relevant each stat may be to a team "winning"
-
-correlation_df = teams_data.corrwith(teams_data['total-points'],numeric_only=True)
-
-#we can filter the correltaion to only strogly correlated stats so as to remove noise from data
-strong_correlation_df = correlation_df[correlation_df.abs() > 0.7]
-
-
-#  print(teams_data)
-
-print("__________________________________________________________________________________________________________")
-
-
+zscore_df = zscore_df.assign(acronymName=teams_data['acronymName'])  # Insert the acronymName column back into the zscore_df
+zscore_df = zscore_df[['acronymName'] + [col for col in zscore_df.columns if col != 'acronymName']]  # Reorder columns
 print(zscore_df)
 
 
-os.makedirs("data/team/single_season", exist_ok=True)
-teams_data.to_csv(f"data/team/single_season/single_season_2026_team_data.csv", index=False, sep=';')
+# # #using the .corr library funciotn we can obtain the correlation of each stat to total points, thus giving a bit of a guide as to how 
+# # # relevant each stat may be to a team "winning"
+
+# # correlation_df = teams_data.corrwith(teams_data['total-points'],numeric_only=True)
+
+# # #we can filter the correltaion to only strogly correlated stats so as to remove noise from data
+# # strong_correlation_df = correlation_df[correlation_df.abs() > 0.7]
+
+
+# #  print(teams_data)
+
+# print("__________________________________________________________________________________________________________")
+
+
+# print(teams_data)
+
+
+# os.makedirs("data/team/single_season", exist_ok=True)
+# teams_data.to_csv(f"data/team/single_season/single_season_2026_team_data.csv", index=False, sep=';')
