@@ -56,6 +56,7 @@ for season in season_ids:
 #make a df with the stddev of each team stat column
     stddev_df =  teams_data.std(numeric_only=True, axis=0)
 #use the average and stddev df to calculate the zscore for each team stat column
+#we do this so that we can easily compare the importance of each stat to total points, regardless of how a stat is represented
     zscore_df = (teams_data - average_df) / stddev_df
 
 
@@ -72,7 +73,7 @@ for season in season_ids:
 
     print("__________________________________________________________________________________________________________")
 
-    print(strong_correlation_df)
+    print(zscore_df)
 
 
     os.makedirs("data/team", exist_ok=True)
