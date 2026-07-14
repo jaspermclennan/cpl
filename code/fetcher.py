@@ -47,7 +47,7 @@ for season in season_ids:
             row[stat["statsId"]] = stat["statsValue"]
         rows.append(row)
 
-    teams_data = pd.DataFrame(rows).select_dtypes(include=[np.number])  # Select only numeric columns
+    teams_data = pd.DataFrame(rows)  # Select only numeric columns
 
 
 
@@ -72,6 +72,7 @@ for season in season_ids:
   #  print(teams_data)
 
     print("__________________________________________________________________________________________________________")
+
 
     print(zscore_df)
 

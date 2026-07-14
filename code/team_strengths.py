@@ -18,3 +18,11 @@ team_ids = {
     }
 
 
+
+
+
+# strength_for_stat = zscore_for_stat * correlation_for_stat
+
+# team_rating = all strengths for stat added together
+
+# figure out a way to weight stats from older years as less important. 
