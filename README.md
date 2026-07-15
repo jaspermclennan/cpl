@@ -4,4 +4,7 @@ As it is designed to be a personal project that can be further developed as my s
 
 
 
-**STAGES**
+***STAGES***
+
+
+**Stage 1: Past Season Success as Indicator of Current Team Strength**
