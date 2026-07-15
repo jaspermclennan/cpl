@@ -119,7 +119,10 @@ print("______________________________________________TOTAL TEAM STRENGTH________
 total_team_strength = pd.DataFrame()
 total_team_strength = team_strength_per_stat.sum(axis=1, numeric_only=True)
 total_team_strength = pd.DataFrame({'total_team_strength': total_team_strength, 'acronymName': teams_data['acronymName']})
-total_team_strength = total_team_strength[['acronymName'] + [col for col in total_team_strength.columns if col != 'acronymName']]  # Reorder columns
+# Reorder columns
+total_team_strength = total_team_strength[['acronymName'] + [col for col in total_team_strength.columns if col != 'acronymName']] 
+
+
 
 #output the final ranking of each team based on their calculated strength
 print(total_team_strength.sort_values(by='total_team_strength', ascending=False).reset_index(drop=True))
