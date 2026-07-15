@@ -6,7 +6,7 @@ import os
 
 # Set base url to fetch TEAM data from the API
 
-base_url = "https://api-sdp.cplsoccer.com/v1/cpl/football/seasons/cpl::Football_Season::c479ab0916a24c3390f1ce2c021ace54/stats/teams?locale=en-US"
+base_url = "https://api-sdp.cplsoccer.com/v1/cpl/football/seasons/cpl::Football_Season::fd43e1d61dfe4396a7356bc432de0007/stats/teams?locale=en-US"
 
 
 #make all season ids into a dictionary we can loop through
@@ -47,7 +47,9 @@ for team in data["teams"]:
 
 teams_data = pd.DataFrame(rows)
 
-print(teams_data)
+
+print("______________________________________________LEAGUE STATS____________________________________________________________")
+print(teams_data.sort_values(by='total-points', ascending=False).reset_index(drop=True))
 
 
 
@@ -69,25 +71,47 @@ print("______________________________________________LEAGUE STAT Z-SCORES FOR EA
 zscore_df = (teams_data - average_df) / stddev_df
 zscore_df = zscore_df.assign(acronymName=teams_data['acronymName'])  # Insert the acronymName column back into the zscore_df
 zscore_df = zscore_df[['acronymName'] + [col for col in zscore_df.columns if col != 'acronymName']]  # Reorder columns
-print(zscore_df)
+print(zscore_df.sort_values(by='total-points', ascending=False).reset_index(drop=True))
 
 
-# # #using the .corr library funciotn we can obtain the correlation of each stat to total points, thus giving a bit of a guide as to how 
-# # # relevant each stat may be to a team "winning"
+#using the .corr library funciotn we can obtain the correlation of each stat to total points, thus giving a bit of a guide as to how 
+# relevant each stat may be to a team "winning"
 
-# # correlation_df = teams_data.corrwith(teams_data['total-points'],numeric_only=True)
+correlation_df = teams_data.corrwith(teams_data['total-points'],numeric_only=True)
 
-# # #we can filter the correltaion to only strogly correlated stats so as to remove noise from data
-# # strong_correlation_df = correlation_df[correlation_df.abs() > 0.7]
+#we can filter the correltaion to only strogly correlated stats so as to remove noise from data
+strong_correlation_df = correlation_df[correlation_df.abs() > 0.75]
 
-
-# #  print(teams_data)
-
-# print("__________________________________________________________________________________________________________")
+print("______________________________________________LEAGUE STAT CORRELATIONS TO TABLE POINTS____________________________________________________________")
+print(correlation_df)
 
 
-# print(teams_data)
+print("______________________________________________LEAGUE STAT STRONG CORRELATIONS TO TABLE POINTS____________________________________________________________")
+print(strong_correlation_df)
 
 
-# os.makedirs("data/team/single_season", exist_ok=True)
-# teams_data.to_csv(f"data/team/single_season/single_season_2026_team_data.csv", index=False, sep=';')
+team_strength_per_stat = pd.DataFrame()
+for stat in strong_correlation_df.index:
+    team_strength_per_stat[stat] = zscore_df[stat] * strong_correlation_df[stat]
+
+
+print("______________________________________________TEAM STRENGTH PER STAT____________________________________________________________")
+team_strength_per_stat = team_strength_per_stat.assign(acronymName=teams_data['acronymName'])  # Insert the acronymName column back into the zscore_df
+team_strength_per_stat = team_strength_per_stat[['acronymName'] + [col for col in team_strength_per_stat.columns if col != 'acronymName']]  # Reorder columns
+print(team_strength_per_stat.sort_values(by='total-points', ascending=False).reset_index(drop=True))
+
+
+print("___________________________________________________________________________________________________________________________________________")
+print("______________________________________________STORING TEAM STRENGTH DATA TO CSV____________________________________________________________")
+os.makedirs("data/team/single_season", exist_ok=True)
+team_strength_per_stat.to_csv(f"data/team/single_season/single_season_2026_team_strength_data.csv", index=False, sep=';')
+print("___________________________________________________________________________________________________________________________________________")
+
+
+
+print("______________________________________________TOTAL TEAM STRENGTH____________________________________________________________")
+total_team_strength = pd.DataFrame()
+total_team_strength = team_strength_per_stat.sum(axis=1, numeric_only=True)
+total_team_strength = pd.DataFrame({'total_team_strength': total_team_strength, 'acronymName': teams_data['acronymName']})
+total_team_strength = total_team_strength[['acronymName'] + [col for col in total_team_strength.columns if col != 'acronymName']]  # Reorder columns
+print(total_team_strength.sort_values(by='total_team_strength', ascending=False).reset_index(drop=True))
