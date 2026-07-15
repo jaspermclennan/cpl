@@ -4,7 +4,37 @@ As it is designed to be a personal project that can be further developed as my s
 
 
 
-****STAGES****
+**STAGES**
 
 
 **Stage 1: Past Season Success as Indicator of Current Team Strength**
+For the first stage of this project, I decided to investigate how well a completed previous season can predict the strength of all teams in the current season. To begin this, I ingested all team data from the 2025 CPL season, and found the z score for each team's stat in each of the stat categories provided. I then used the .corrwith() function to determine which of the available stats most strongly correlated to having points in the table (and therefore to team success). Obviously, some stats need to be ignored (for example, total-wins would highly correlate to points, but doesnt really provide an insight)
+
+
+
+**Stage 2: League History and Current Season Success as Indicator of Current Team Strength**
+
+
+
+**Stage 3: Introducing Player Performance and Impact**
+
+
+
+**Stage 4: Combining Team and Player Performance**
+
+
+
+**Stage 5: Considering Fixture Congestion, Player Fatigue, Travel Distance, Weather**
+
+
+
+**Stage 5: Polling Socials to Track Matchday Squads and Update Projected XI**
+
+
+
+**Stage 5: Determine Feasibility Integrating Machine Learning**
+
+
+
+
+
