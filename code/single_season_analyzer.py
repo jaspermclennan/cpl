@@ -34,6 +34,7 @@ else:
 data = response.json()
 
 
+#go through the response and make df for each team with all the stats as columns, and the team name as a row
 rows = []
 for team in data["teams"]:
     row = {
@@ -76,20 +77,23 @@ print(zscore_df.sort_values(by='total-points', ascending=False).reset_index(drop
 
 #using the .corr library funciotn we can obtain the correlation of each stat to total points, thus giving a bit of a guide as to how 
 # relevant each stat may be to a team "winning"
-
 correlation_df = teams_data.corrwith(teams_data['total-points'],numeric_only=True)
 
 #we can filter the correltaion to only strogly correlated stats so as to remove noise from data
-strong_correlation_df = correlation_df[correlation_df.abs() > 0.75]
+strong_correlation_df = correlation_df[correlation_df.abs() > 0.7]
 
 print("______________________________________________LEAGUE STAT CORRELATIONS TO TABLE POINTS____________________________________________________________")
 print(correlation_df)
 
 
 print("______________________________________________LEAGUE STAT STRONG CORRELATIONS TO TABLE POINTS____________________________________________________________")
+print("______________________________________________STORING TEAM STRENGTH DATA TO CSV____________________________________________________________")
+os.makedirs("data/team/single_season/correlations", exist_ok=True)
+strong_correlation_df.to_csv(f"data/team/single_season/correlations/strong_correlations.csv", index=True, sep=';')
 print(strong_correlation_df)
 
 
+#multipy the zscore of each stat by the correlation of that stat to total points to get a "team strength" score for each stat
 team_strength_per_stat = pd.DataFrame()
 for stat in strong_correlation_df.index:
     team_strength_per_stat[stat] = zscore_df[stat] * strong_correlation_df[stat]
@@ -101,17 +105,21 @@ team_strength_per_stat = team_strength_per_stat[['acronymName'] + [col for col i
 print(team_strength_per_stat.sort_values(by='total-points', ascending=False).reset_index(drop=True))
 
 
+#store the team strength per stat to a csv file for later use
 print("___________________________________________________________________________________________________________________________________________")
 print("______________________________________________STORING TEAM STRENGTH DATA TO CSV____________________________________________________________")
 os.makedirs("data/team/single_season", exist_ok=True)
-team_strength_per_stat.to_csv(f"data/team/single_season/single_season_2026_team_strength_data.csv", index=False, sep=';')
+team_strength_per_stat.to_csv(f"data/team/single_season/single_season_team_strength_data.csv", index=False, sep=';')
 print("___________________________________________________________________________________________________________________________________________")
 
 
 
+#by summing the team strength per stat we can get a total team strength score for each team, which can be used to compare teams across the league
 print("______________________________________________TOTAL TEAM STRENGTH____________________________________________________________")
 total_team_strength = pd.DataFrame()
 total_team_strength = team_strength_per_stat.sum(axis=1, numeric_only=True)
 total_team_strength = pd.DataFrame({'total_team_strength': total_team_strength, 'acronymName': teams_data['acronymName']})
 total_team_strength = total_team_strength[['acronymName'] + [col for col in total_team_strength.columns if col != 'acronymName']]  # Reorder columns
+
+#output the final ranking of each team based on their calculated strength
 print(total_team_strength.sort_values(by='total_team_strength', ascending=False).reset_index(drop=True))
