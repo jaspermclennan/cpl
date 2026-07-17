@@ -3,6 +3,7 @@ As it is designed to be a personal project that can be further developed as my s
 
 
 See Live Site @ https://jaspermclennan.github.io/cpl/
+See Live Streamlit Site @ https://cpljasper.streamlit.app/
 
 **STAGES**
 
