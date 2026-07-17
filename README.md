@@ -13,6 +13,7 @@ For the first stage of this project, I decided to investigate how well a complet
 
 
 **Stage 2: League History and Current Season Success as Indicator of Current Team Strength**
+For this stage, I intend to undertake a similar process as above, but take into account all seasons of the CPL, with a decaying importance in how relevant a past season is to the current one.
 
 
 

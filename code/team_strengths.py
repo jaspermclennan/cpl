@@ -1,6 +1,6 @@
-import fetcher
+import cpl.code.multi_season_fetcher as multi_season_fetcher
 
-print(fetcher.strong_correlation_df)
+print(multi_season_fetcher.strong_correlation_df)
 
 
 
